@@ -1,0 +1,11 @@
+# Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/Fixtures.html
+
+one:
+  scenario: 
+  name: MyString
+  type: 1
+
+two:
+  scenario: 
+  name: MyString
+  type: 1

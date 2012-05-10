@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>ConvoMister</title>
+  <%= stylesheet_link_tag    "application", :media => "all" %>
+  <%= javascript_include_tag "application" %>
+  <%= csrf_meta_tags %>
+</head>
+<body>
+
+<div class="navbar navbar-fixed-top">
+  <div class="navbar-inner">
+    <div class="container">
+      <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </a>
+      <a class="brand" href="/">ConvoMister</a>
+      <div class="nav-collapse">
+        <% if session[:user_id] == nil || session[:user_id] == "" %>
+           <p class="navbar-text pull-right"> Not Logged In </p>
+        <% else %>
+           <ul class="nav">
+             <li <% if params[:controller] == 'profiles' %>class="active"<% end %>><%= link_to 'Scenarios', :controller => "scenarios", :action => "index"%></li>
+             <li <% if params[:controller] == 'mashes' %>class="active"<% end %>><a href="#">My Account</a></li>           </ul>
+           <p class="navbar-text pull-right">
+             Logged in as <a href="#"><%=session[:username]%></a> | <%= link_to("Logout", :controller => 'access', :action => 'logout') %>
+           </p>
+        <% end  %>
+      </div><!--/.nav-collapse -->
+    </div>
+  </div>
+</div>
+
+<div class="container">
+   <%= yield %>
+</div>
+</body>
+</html>

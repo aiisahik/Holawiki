@@ -1,0 +1,77 @@
+<script type="text/javascript">
+
+   $(function() {
+      $("#speaker_plus").click(function (event){
+         event.preventDefault();
+         var num_speakers = parseInt($("#num_speakers").attr("value")) + 1;
+         if (num_speakers < 6) {
+            $("#num_speakers").attr("value",  num_speakers);
+            var html_input = "<p>Speaker " + num_speakers + ": <input name=\"speaker[" + num_speakers + "]\" type=\"text\" value=\"Hot Girl " + (num_speakers-1) + "\" /></p>";
+            var html_input2 = "<div class=\"field\" id=\"speakers\">"+"</div>";
+
+
+            $("#speakers p").last().after(html_input);
+
+         }
+      });
+
+      $("#speaker_minus").click(function (event){
+         event.preventDefault();
+         var num_speakers = $("#num_speakers").attr("value");
+         if (num_speakers > 2) {
+            $("#num_speakers").attr("value",  parseInt(num_speakers)-1);
+            //$("#speakers").last().after("<div class=\"field\" id=\"speakers\"></div>" );
+
+            $("#speakers p").last().remove();
+         }
+      });
+   });
+
+</script>
+
+
+
+<%= form_for(@scenario) do |f| %>
+  <% if @scenario.errors.any? %>
+    <div id="error_explanation">
+      <h2><%= pluralize(@scenario.errors.count, "error") %> prohibited this scenario from being saved:</h2>
+
+      <ul>
+      <% @scenario.errors.full_messages.each do |msg| %>
+        <li><%= msg %></li>
+      <% end %>
+      </ul>
+    </div>
+  <% end %>
+
+  <div class="field">
+    <%= f.label :name %><br />
+    <%= f.text_field :name %>
+  </div>
+  <div class="field">
+    <%= f.label :description %><br />
+    <%= f.text_area :description, :size => "50x5" %>
+  </div>
+   <div class="field">
+     Number of Speakers <br />
+     <a href="#" id="speaker_minus" class='btn'> - </a>
+     <%= text_field_tag :num_speakers, "2", :size => 2, :maxlength => 2  %>
+
+
+     <a href="#" id="speaker_plus" class='btn'> + </a>
+  </div>
+   <div class="field">
+     Speaker 1: <%= text_field_tag "speaker[1]", "You" %>
+   </div>
+   <div class="field" id="speakers">
+     <p>
+     Speaker 2: <input id="speaker_2" name="speaker[2]" type="text" value="Hot Girl" />
+     </p>
+   </div>
+
+
+
+  <div class="actions">
+    <%= f.submit %>
+  </div>
+<% end %>

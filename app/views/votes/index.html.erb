@@ -1,0 +1,27 @@
+<h1>Listing votes</h1>
+
+<table>
+  <tr>
+    <th>Vote</th>
+    <th>User.references</th>
+    <th>Node.references</th>
+    <th></th>
+    <th></th>
+    <th></th>
+  </tr>
+
+<% @votes.each do |vote| %>
+  <tr>
+    <td><%= vote.vote %></td>
+    <td><%= vote.user.references %></td>
+    <td><%= vote.node.references %></td>
+    <td><%= link_to 'Show', vote %></td>
+    <td><%= link_to 'Edit', edit_vote_path(vote) %></td>
+    <td><%= link_to 'Destroy', vote, confirm: 'Are you sure?', method: :delete %></td>
+  </tr>
+<% end %>
+</table>
+
+<br />
+
+<%= link_to 'New Vote', new_vote_path %>

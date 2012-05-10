@@ -1,0 +1,11 @@
+# Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/Fixtures.html
+
+one:
+  vote: 
+  user.references: MyString
+  node.references: MyString
+
+two:
+  vote: 
+  user.references: MyString
+  node.references: MyString
