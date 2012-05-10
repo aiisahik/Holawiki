@@ -1,0 +1,21 @@
+
+---
+users:
+  columns:
+  - id
+  - username
+  - hashed_password
+  - salt
+  - dob
+  - email
+  - created_at
+  - updated_at
+  records: 
+  - - 1
+    - mpk
+    - 8396bbfd1786117887f7b63daaaa60fee6224d97
+    - bc7d137b684ccda3c3432782f03f4b9574a8bb25
+    - '2012-04-29'
+    - jie.z.zhou@gmail.com
+    - '2012-04-29 07:14:15.615061'
+    - '2012-04-29 07:14:15.615061'

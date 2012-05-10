@@ -1,7 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="0469c105-074e-4ace-a5f0-33aaac01555e" name="Default" comment="" />
+    <list default="true" id="0469c105-074e-4ace-a5f0-33aaac01555e" name="Default" comment="">
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/vcs.xml" afterPath="$PROJECT_DIR$/.idea/vcs.xml" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/Gemfile.lock" afterPath="$PROJECT_DIR$/Gemfile.lock" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/Gemfile" afterPath="$PROJECT_DIR$/Gemfile" />
+    </list>
     <ignored path="convomister.iws" />
     <ignored path=".idea/workspace.xml" />
     <option name="TRACKING_ENABLED" value="true" />
@@ -31,6 +36,15 @@
           </provider>
         </entry>
       </file>
+      <file leaf-file-name="Gemfile" pinned="false" current="true" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/Gemfile">
+          <provider selected="true" editor-type-id="text-editor">
+            <state line="9" column="24" selection-start="180" selection-end="221" vertical-scroll-proportion="0.23113964">
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
       <file leaf-file-name="routes.rb" pinned="false" current="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/config/routes.rb">
           <provider selected="true" editor-type-id="text-editor">
@@ -44,15 +58,30 @@
         <entry file="file://$PROJECT_DIR$/app/views/layouts/application.html.erb">
           <provider selected="true" editor-type-id="text-editor">
             <state line="20" column="8" selection-start="604" selection-end="664" vertical-scroll-proportion="-6.4">
-              <folding />
+              <folding>
+                <marker date="1336615520000" expanded="true" signature="21:1412" placeholder="..." />
+                <marker date="1336615520000" expanded="true" signature="28:198" placeholder="..." />
+                <marker date="1336615520000" expanded="true" signature="205:1404" placeholder="..." />
+                <marker date="1336615520000" expanded="true" signature="244:1348" placeholder="..." />
+                <marker date="1336615520000" expanded="true" signature="273:1341" placeholder="..." />
+                <marker date="1336615520000" expanded="true" signature="301:1332" placeholder="..." />
+                <marker date="1336615520000" expanded="true" signature="385:513" placeholder="..." />
+                <marker date="1336615520000" expanded="true" signature="594:1299" placeholder="..." />
+                <marker date="1336615520000" expanded="true" signature="607:1283" placeholder="if ... end" />
+                <marker date="1336615520000" expanded="true" signature="775:1066" placeholder="..." />
+                <marker date="1336615520000" expanded="true" signature="797:856" placeholder="if ... end" />
+                <marker date="1336615520000" expanded="true" signature="959:1016" placeholder="if ... end" />
+                <marker date="1336615520000" expanded="true" signature="1112:1267" placeholder="..." />
+                <marker date="1336615520000" expanded="true" signature="1373:1396" placeholder="..." />
+              </folding>
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="index.html.erb" pinned="false" current="true" current-in-tab="true">
+      <file leaf-file-name="index.html.erb" pinned="false" current="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/app/views/scenarios/index.html.erb">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="8" column="50" selection-start="213" selection-end="213" vertical-scroll-proportion="0.24080268">
+            <state line="8" column="27" selection-start="213" selection-end="213" vertical-scroll-proportion="-5.3333335">
               <folding />
             </state>
           </provider>
@@ -89,7 +118,9 @@
         <entry file="file://$PROJECT_DIR$/app/models/node.rb">
           <provider selected="true" editor-type-id="text-editor">
             <state line="18" column="76" selection-start="545" selection-end="545" vertical-scroll-proportion="0.0">
-              <folding />
+              <folding>
+                <marker date="1336549608000" expanded="true" signature="436:540" placeholder=" ... end" />
+              </folding>
             </state>
           </provider>
         </entry>
@@ -110,10 +141,12 @@
       <setting name="OPEN_NEW_TAB" value="false" />
     </FindUsagesManager>
   </component>
+  <component name="Git.Settings">
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+  </component>
   <component name="IdeDocumentHistory">
     <option name="changedFiles">
       <list>
-        <option value="$PROJECT_DIR$/app/views/users/_form.html.erb" />
         <option value="$PROJECT_DIR$/db/migrate/20120429064414_create_scenarios.rb" />
         <option value="$PROJECT_DIR$/app/assets/javascripts/scenarios.js.coffee" />
         <option value="$PROJECT_DIR$/app/views/scenarios/_form.html.erb" />
@@ -129,6 +162,7 @@
         <option value="$PROJECT_DIR$/app/controllers/nodes_controller.rb" />
         <option value="$PROJECT_DIR$/app/assets/javascripts/scenarios.js" />
         <option value="$PROJECT_DIR$/app/views/scenarios/index.html.erb" />
+        <option value="$PROJECT_DIR$/Gemfile" />
       </list>
     </option>
   </component>
@@ -145,7 +179,7 @@
     <option name="width" value="1291" />
     <option name="height" value="769" />
   </component>
-  <component name="ProjectLevelVcsManager" settingsEditedManually="false">
+  <component name="ProjectLevelVcsManager" settingsEditedManually="true">
     <OptionsSetting value="true" id="Add" />
     <OptionsSetting value="true" id="Remove" />
     <OptionsSetting value="true" id="Checkout" />
@@ -541,7 +575,7 @@
     <property name="options.splitter.main.proportions" value="0.3" />
     <property name="WebServerToolWindowFactoryState" value="false" />
     <property name="recentsLimit" value="5" />
-    <property name="options.lastSelected" value="preferences.editor" />
+    <property name="options.lastSelected" value="project.propVCSSupport.Mappings" />
     <property name="GoToClass.includeJavaFiles" value="false" />
     <property name="options.splitter.details.proportions" value="0.2" />
     <property name="options.searchVisible" value="true" />
@@ -909,11 +943,6 @@
         <state line="0" column="0" selection-start="0" selection-end="0" vertical-scroll-proportion="0.0" />
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/Gemfile">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="13" column="8" selection-start="273" selection-end="273" vertical-scroll-proportion="0.0" />
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/db/migrate/20120429050528_create_nodes.rb">
       <provider selected="true" editor-type-id="text-editor">
         <state line="18" column="25" selection-start="459" selection-end="459" vertical-scroll-proportion="0.0">
@@ -952,21 +981,31 @@
     <entry file="file://$PROJECT_DIR$/app/models/node.rb">
       <provider selected="true" editor-type-id="text-editor">
         <state line="18" column="76" selection-start="545" selection-end="545" vertical-scroll-proportion="0.0">
-          <folding />
+          <folding>
+            <marker date="1336549608000" expanded="true" signature="436:540" placeholder=" ... end" />
+          </folding>
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/app/views/layouts/application.html.erb">
       <provider selected="true" editor-type-id="text-editor">
         <state line="20" column="8" selection-start="604" selection-end="664" vertical-scroll-proportion="-6.4">
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/app/controllers/nodes_controller.rb">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="38" column="12" selection-start="800" selection-end="800" vertical-scroll-proportion="0.0">
-          <folding />
+          <folding>
+            <marker date="1336615520000" expanded="true" signature="21:1412" placeholder="..." />
+            <marker date="1336615520000" expanded="true" signature="28:198" placeholder="..." />
+            <marker date="1336615520000" expanded="true" signature="205:1404" placeholder="..." />
+            <marker date="1336615520000" expanded="true" signature="244:1348" placeholder="..." />
+            <marker date="1336615520000" expanded="true" signature="273:1341" placeholder="..." />
+            <marker date="1336615520000" expanded="true" signature="301:1332" placeholder="..." />
+            <marker date="1336615520000" expanded="true" signature="385:513" placeholder="..." />
+            <marker date="1336615520000" expanded="true" signature="594:1299" placeholder="..." />
+            <marker date="1336615520000" expanded="true" signature="607:1283" placeholder="if ... end" />
+            <marker date="1336615520000" expanded="true" signature="775:1066" placeholder="..." />
+            <marker date="1336615520000" expanded="true" signature="797:856" placeholder="if ... end" />
+            <marker date="1336615520000" expanded="true" signature="959:1016" placeholder="if ... end" />
+            <marker date="1336615520000" expanded="true" signature="1112:1267" placeholder="..." />
+            <marker date="1336615520000" expanded="true" signature="1373:1396" placeholder="..." />
+          </folding>
         </state>
       </provider>
     </entry>
@@ -986,7 +1025,21 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/app/views/scenarios/index.html.erb">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="8" column="50" selection-start="213" selection-end="213" vertical-scroll-proportion="0.24080268">
+        <state line="8" column="27" selection-start="213" selection-end="213" vertical-scroll-proportion="-5.3333335">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/app/controllers/nodes_controller.rb">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="38" column="12" selection-start="800" selection-end="800" vertical-scroll-proportion="0.0">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/Gemfile">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="9" column="24" selection-start="180" selection-end="221" vertical-scroll-proportion="0.23113964">
           <folding />
         </state>
       </provider>

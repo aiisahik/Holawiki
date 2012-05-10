@@ -1,0 +1,20 @@
+
+---
+scenarios:
+  columns:
+  - id
+  - name
+  - description
+  - created_at
+  - updated_at
+  records: 
+  - - 1
+    - Bar
+    - Girl stands by herself at the bar...
+    - '2012-05-01 05:01:47.953209'
+    - '2012-05-01 05:01:47.953209'
+  - - 2
+    - Club 2 girls together
+    - Blah
+    - '2012-05-10 03:27:30.781837'
+    - '2012-05-10 03:27:30.781837'
