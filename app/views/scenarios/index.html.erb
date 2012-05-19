@@ -1,12 +1,61 @@
-<script type="text/javascript">
+<script type="text/javascript" xmlns="http://www.w3.org/1999/html">
+
+
+
+(function(window,undefined){
+
+   // Prepare
+
+
+   // Change our States
+//      History.pushState({state:1}, "State 1", "?state=1"); // logs {state:1}, "State 1", "?state=1"
+//      History.pushState({state:2}, "State 2", "?state=2"); // logs {state:2}, "State 2", "?state=2"
+//      History.replaceState({state:3}, "State 3", "?state=3"); // logs {state:3}, "State 3", "?state=3"
+//      History.pushState(null, null, "?state=4"); // logs {}, '', "?state=4"
+//      History.back(); // logs {state:3}, "State 3", "?state=3"
+//      History.back(); // logs {state:1}, "State 1", "?state=1"
+//      History.back(); // logs {}, "Home Page", "?"
+//      History.go(2); // logs {state:3}, "State 3", "?state=3"
+//
+//
+
 
    $(function() {
+
+      // jquery history stuff
+      var History = window.History; // Note: We are using a capital H instead of a lower h
+      if ( !History.enabled ) {
+         // History.js is disabled for this browser.
+         // This is because we can optionally choose to support HTML4 browsers or not.
+         return false;
+      }
+
+      // Bind to StateChange Event
+      History.Adapter.bind(window,'statechange',function(){ // Note: We are using statechange instead of popstate
+         var State = History.getState(); // Note: We are using History.getState() instead of event.state
+         History.log(State.data, State.title, State.url);
+
+         populate_node_tree(State.data.node);
+
+
+
+
+
+      });
 
       // define global variables
       var gbl_current_scenario = 0;
       var gbl_current_node = 0;
       var gbl_previous_node = 0;
-      var gbl_next_speaker;
+      var gbl_current_speaker; //ID
+      var gbl_next_speaker_type = 0; // Index of 0 or 1; default to 0 or YOU
+
+      var gbl_speaker_arr = [];
+      var gbl_speaker_id_arr = [];
+
+
+      $("#input-node").hide();
+      $("#scenario_speaker_header").hide();
 
       //define user_id
       <% if session[:user_id] == nil || session[:user_id] == "" %>
@@ -15,16 +64,34 @@
          var gbl_user_id = <%= session[:user_id] %>;
       <% end %>
 
-   // function that processes the initial scenario selection
+   // CLICK SCENARIO >> OPENING LINES
 
-      $("#scenario_item a").click(function (event){
-         event.preventDefault();
-         $(".nav.nav-list li").removeAttr("class");
-         //var scenario_id = parseInt($(this).attr("id"));
+      var bind_scenario = function(jsonTarget){
 
-         var scenario_id = parseInt(this.id.slice(0,-9));
+         $(jsonTarget).click(function (event){
+            //event.preventDefault();
+            $(".nav.nav-list li").removeAttr("class");
 
-         $(this).parent().attr("class", "active");
+            populate_nodes_by_scenario(parseInt(this.id.slice(0,-9)));
+
+            $(this).parent().attr("class", "active");
+
+            //return false;
+         });
+      };
+
+      bind_scenario("#scenario_item a");
+
+      // Populate SCENARIO
+
+      var populate_nodes_by_scenario = function(scenario_id){
+
+         // hide the next node text input
+         $("#input-node").hide();
+         // hide the speaker head
+         $("#scenario_speaker_header").hide();
+
+
          var jsonUrl = "/nodes/initial.json?scenario_id="+scenario_id;
          $.getJSON(jsonUrl, function (json) {
             $("#debug").html(JSON.stringify(json));
@@ -32,12 +99,22 @@
             $("#scenario_desc").html(html_input);
             $("#tree_nodes").empty();
 
+            // label speaker headers & define speaker global variables
+
+            $.each(json.speakers, function(i, item) {
+               $("#label-speaker" + i).html(item.name);
+
+               gbl_speaker_arr[item.speaker_type]= item.name;
+               gbl_speaker_id_arr[item.speaker_type]= item.id;
+            });
+
             gbl_current_scenario = json.scenario.id;
+
             populate_next_nodes(json.next_nodes);
 
          });
-         //return false;
-      });
+      };
+
 
    // populate next nodes based on json input
 
@@ -45,14 +122,20 @@
 
          $("#next_nodes").empty();
          $.each(json, function(i, item) {
-            //var html_input = "<p><a href=\"#\" id=\""+ item.id +"_next\">" + item.node_text + "</a></p>";
-            var html_input = "<p><button type=\"submit\" id=\""+ item.id +"_next\">" + item.node_text + "</button></p>";
+
+            var html_input = "<div class=\"span-center-inner\"><p><button type=\"submit\" id=\""+ item.id +"_next\">" + item.node_text + "</button></p></div>";
             $("#next_nodes").append(html_input);
             $("#"+item.id+"_next").attr("class", "btn btn-info button");
-            $("#next_speaker").html(item.speaker.name + " might say:");
 
-            gbl_next_speaker = item.speaker.id;
+
+            format_node("#"+item.id+"_next", item.speaker.name, false);
+
+            gbl_next_speaker_type = item.speaker.speaker_type;
          });
+
+         $("#input-node").show();
+
+         $("#next_speaker").html(gbl_speaker_arr[gbl_next_speaker_type] + " might say:");
 
          bind_node_tree("#next_nodes p button"); // bind click for next nodes
       };
@@ -62,38 +145,70 @@
          $(jqueryTarget).click(function (event){
             event.preventDefault();
             var node_id = parseInt(this.id.slice(0,-5));
-            populate_node_tree(node_id);
+
+            History.pushState({node:node_id}, "Conversation Node "+node_id, "/scenarios?"+node_id);
+
+            //populate_node_tree(node_id);
             //return false;
          });
       };
 
       // generate tree nodes
+
       var populate_node_tree = function(node_id) {
 
-         var jsonUrl = "/nodes/tree/"+node_id+".json";
+         //var jsonUrl = "/nodes/tree/"+node_id+".json";
+
+         var jsonUrl = "/nodes/tree/"+node_id+".json?scenario_id="+gbl_current_scenario;
          $.getJSON(jsonUrl, function (json) {
+
+            // clear tree;
+            // TODO: make this more efficient.
+            $("#tree_nodes").empty();
+
+            // DEBUG
             $("#debug").html(JSON.stringify(json));
 
-
-            $("#tree_nodes").empty();
+            // JSON
             $.each(json.node_tree, function(i, item) {
-               var html_input = "<p><button id=\""+ item.id +"_tree\">"+ item.speaker.name + ": " + item.node_text + "</button></p>";
+               var html_input = "<div class=\"span-center-inner\"><p><button id=\""+ item.id +"_tree\">" + item.node_text + "</button></p></div>";
                $("#tree_nodes").append(html_input);
-               if (item.speaker.name == "You") {
-                  $("#"+item.id+"_tree").attr("class", "btn btn-info button left");
-               } else {
-                  $("#"+item.id+"_tree").attr("class", "btn btn-info button right");
-               }
+
+
+               // FORMAT NODE
+
+               format_node("#"+item.id+"_tree", item.speaker.name, false);
+
 
                gbl_previous_node = item.id;
 
             });
             gbl_current_node = json.current_node.id;
 
-            // insert current node to end of tree
-            var html_current_node = "<p><button type=\"submit\" class=\"btn btn-success button\" id=\""+ json.current_node.id +"_tree\">"+ json.current_node.speaker.name + ": " + json.current_node.node_text + "</button></p>";
+            // CURRENT NODE
+            var html_current_node = "<div class=\"span-center-inner\">" +
+                    "<div class=\"btn-group\" id=\""+ json.current_node.id +"_group\">" +
+                    "<button id=\""+ json.current_node.id +"_tree\">" + json.current_node.node_text + "</button>" +
+                    "<button class=\"btn dropdown-toggle\" data-toggle=\"dropdown\">" +
+                    "<span class=\"caret\"></span></button></div>";
+
+                    //"<button type=\"submit\" id=\""+ json.current_node.id +"_tree\">"+ json.current_node.node_text + "</button></p></div>";
             $("#tree_nodes").append(html_current_node);
 
+            // FORMAT CURRENT NODE
+            format_node("#"+json.current_node.id+"_group", json.current_node.speaker.name,true);
+            // bind current node
+
+            bind_node_tree("#tree_nodes div div button");
+
+            // DETERMINE CURRENT SPEAKER
+
+            gbl_next_speaker_type = Math.abs((json.current_node.speaker.speaker_type)-1);
+
+            // SHOW SPEAKER HEADER
+            $("#scenario_speaker_header").show();
+
+            // BIND CLICK for TREE NODES
             bind_node_tree("#tree_nodes p button");
 
             populate_next_nodes(json.next_nodes);
@@ -102,6 +217,42 @@
       };
 
 
+   // FORMAT NODE ACCORDING TO SPEAKER
+
+      var format_node = function (jqueryTarget, speaker, boolCurrent){
+         // format CSS
+         if (speaker == "You") {
+            $(jqueryTarget).parent().attr("class", "tree-left");
+
+            if (boolCurrent){
+               $(jqueryTarget+" button:nth-child(1)").attr("class", "node-button node-you node-left");
+               $(jqueryTarget+" button:nth-child(2)").attr("class", "node-button node-you dropdown-toggle");
+            } else {
+               $(jqueryTarget).attr("class", "node-button node-you node-normal");
+            }
+
+         } else {
+            $(jqueryTarget).parent().attr("class", "tree-right");
+            if (boolCurrent){
+               $(jqueryTarget+" button:nth-child(1)").attr("class", "node-button node-speaker2 node-left");
+               $(jqueryTarget+" button:nth-child(2)").attr("class", "node-button node-speaker2 dropdown-toggle");
+            } else {
+               $(jqueryTarget).attr("class", "node-button node-speaker2 node-normal");
+            }
+         }
+         if (boolCurrent){
+            $(jqueryTarget+" button:nth-child(2)").height($(jqueryTarget+" button:nth-child(1)").height()+8);
+            if ($(jqueryTarget+" button:nth-child(1)").width() > 180) {
+               $(jqueryTarget+" button:nth-child(1)").width(180);
+
+            }
+         } else {
+            if ($(jqueryTarget).width() > 180) {
+               $(jqueryTarget).width(180);
+
+            }
+         }
+      };
 
 
    // bind insert action when user presses enter in new node text box
@@ -111,7 +262,7 @@
             //alert('You pressed enter!');
             event.preventDefault();
 
-            var dataString = 'node[node_text]=' + $("#node_new").val() + '&node[previous_node_id]=' + gbl_current_node + '&node[scenario_id]=' + gbl_current_scenario + "&node[speaker_id]=" + gbl_next_speaker + "&node[user_id]=" + gbl_user_id + "&node[node_type]=1";
+            var dataString = 'node[node_text]=' + $("#node_new").val() + '&node[previous_node_id]=' + gbl_current_node + '&node[scenario_id]=' + gbl_current_scenario + "&node[speaker_id]=" + gbl_speaker_id_arr[gbl_next_speaker_type] + "&node[user_id]=" + gbl_user_id + "&node[node_type]=1";
 
             $.ajax({
                type: "POST",
@@ -122,28 +273,26 @@
 
                   $("#debug").html(JSON.stringify(returnJSON));
 
-                  var html_input = "<p><button type=\"submit\" id=\""+ returnJSON.id + "_next\">" + $("#node_new").val() + "</button></p>";
+                  var html_input = "<div class=\"span-center-inner\"><p><button type=\"submit\" id=\""+ returnJSON.id + "_next\">" + $("#node_new").val() + "</button></p></div>";
                   $("#next_nodes").append(html_input);
-                  $("#"+returnJSON.id+"_next").attr("class", "btn btn-info button");
+
+                  format_node("#"+returnJSON.id+"_next",gbl_speaker_arr[gbl_next_speaker_type], false)
 
                   bind_node_tree("#next_nodes p button");
                   $("#node_new").val('');
                }
             });
 
-
          }
       });
 
-
-
-
    });
+
+})(window);
 </script>
 
 
-
-<div class="row-fluid">
+<div class="row">
    <div class="span4">
      <div class="well sidebar-nav">
        <ul class="nav nav-list">
@@ -151,22 +300,38 @@
          <% @scenarios.each do |scenario| %>
          <li id="scenario_item"><a href="#" id="<%= scenario.id %>_scenario"><%= scenario.name %></a></li>
          <% end %>
+         <li></li>
 
-         <li> <%= link_to 'New Scenario', new_scenario_path %> </li>
+         <li class="nav-header" id="scenario_new"><%= link_to 'New Scenario', new_scenario_path %><br></li>
+
        </ul>
      </div><!--/.well -->
    </div><!--/span-->
-  <div class="span4">
-    <div id="scenario_desc"></div>
+  <div class="span-center">
+    <div class="span-center-inner">
+      <div id="scenario_desc"></div>
+    </div>
+
+    <div class="span-center-inner">
+       <div id="scenario_speaker_header">
+         <table width="100%"><tr><td width="50%"><h4 id="label-speaker0"></h4></td><td width="50%" align="right"><h4 id="label-speaker1"></h4></td> </tr></table>
+       </div>
+    </div>
+
     <div id="tree_nodes"></div>
-  </div>
-  <div class="span4">
-    <h3 id="next_speaker"></h3>
+
+    <div class="span-center-inner">
+        <h3 id="next_speaker"></h3>
+    </div>
+
     <div id="next_nodes"></div>
+
+
     <div id="input-node">
-      <textarea rows="3" id="node_new" class="input-xlarge.form-search" placeholder="Suggest something to say..."></textarea>
+      <textarea rows="3" id="node_new" class="form-node" placeholder="Suggest something to say..."></textarea>
     </div>
   </div>
+  <div class="span4"></div>
 </div>
 
 <div id="debug"></div>

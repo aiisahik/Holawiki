@@ -13,6 +13,6 @@ class Node < ActiveRecord::Base
   scope :find_by_scenario, lambda { |id| where("scenario_id == ?", id) }
 
   def as_json(options={})
-    super(:only => [:id, :node_text, :user_id], :include =>[:speaker => {:only => [:id, :name]}])
+    super(:only => [:id, :node_text, :user_id], :include =>[:speaker => {:only => [:id, :name, :speaker_type]}])
   end
 end

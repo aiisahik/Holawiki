@@ -52,7 +52,7 @@ class ScenariosController < ApplicationController
           else
             type = 1
           end
-          Speaker.create(:scenario_id => @scenario.id, :name => speaker[1], :type => type)
+          Speaker.create(:scenario_id => @scenario.id, :name => speaker[1], :speaker_type => type)
         end
 
 

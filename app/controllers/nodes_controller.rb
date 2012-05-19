@@ -21,9 +21,14 @@ class NodesController < ApplicationController
     end
   end
 
+
+  #load entire tree
   def tree
 
-    @current_node = Node.joins(:speaker).find(params[:id])
+    @current_node = Node.find(params[:id])
+
+    @scenario = Scenario.find(@current_node.scenario_id)
+    @speakers = Speaker.where("scenario_id = ?", @current_node.scenario_id)
 
     # find all previous nodes
     @tree = []
@@ -37,12 +42,15 @@ class NodesController < ApplicationController
     end
 
     @tree = @tree.reverse
+    @next_nodes = Node.where("previous_node_id = ? AND scenario_id = ?", @current_node.id, params[:scenario_id])
+
 
     # find the next nodes
-    @next_nodes = Node.where("previous_node_id = ?", @current_node.id)
 
     respond_to do |format|
       format.json { render json: {
+          :scenario => @scenario,
+          :speakers => @speakers,
           :current_node => @current_node,
           :node_tree => @tree,
           :next_nodes => @next_nodes,
@@ -52,13 +60,17 @@ class NodesController < ApplicationController
 
   def initial
 
-    @nodes = Node.where("scenario_id = ? AND previous_node_id = 0", params[:scenario_id])
     @scenario = Scenario.find(params[:scenario_id])
+    @next_nodes = Node.where("scenario_id = ? AND previous_node_id = 0", params[:scenario_id])
+    @speakers = Speaker.where("scenario_id = ?", params[:scenario_id])
 
-      respond_to do |format|
+
+    respond_to do |format|
       format.json { render json: {
+
           :scenario => @scenario,
-          :next_nodes => @nodes}
+          :speakers => @speakers,
+          :next_nodes => @next_nodes}
       }
     end
   end
