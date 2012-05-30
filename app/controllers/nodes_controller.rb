@@ -61,7 +61,8 @@ class NodesController < ApplicationController
   def initial
 
     @scenario = Scenario.find(params[:scenario_id])
-    @next_nodes = Node.where("scenario_id = ? AND previous_node_id = 0", params[:scenario_id])
+    @start_node = Node.where("scenario_id = ? AND previous_node_id = 0", params[:scenario_id])
+    @next_nodes = Node.where("scenario_id = ? AND previous_node_id = ?", params[:scenario_id],@start_node.first.id)
     @speakers = Speaker.where("scenario_id = ?", params[:scenario_id])
 
 
@@ -70,6 +71,7 @@ class NodesController < ApplicationController
 
           :scenario => @scenario,
           :speakers => @speakers,
+          :start_node => @start_node.first,
           :next_nodes => @next_nodes}
       }
     end
