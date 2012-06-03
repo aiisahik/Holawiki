@@ -95,10 +95,12 @@
 
             bind_node_tree('#'+json.start_node.id +'_tree');
 
+
+         // POPULATE NEXT NODES
             $("#next_nodes").empty();
-            populate_next_nodes(json.next_nodes_0);
-            populate_next_nodes(json.next_nodes_1);
-            populate_next_nodes(json.next_nodes_events);
+            populate_next_nodes(json.next_nodes_0); // LEFT NODES
+            populate_next_nodes(json.next_nodes_1); // RIGHT NODES
+            populate_next_nodes(json.next_nodes_events);  // EVENT NODES
 
          });
       };
@@ -156,12 +158,13 @@
          var jsonUrl = "/nodes/tree/"+node_id+".json?scenario_id="+gbl_current_scenario;
          $.getJSON(jsonUrl, function (json) {
 
-            // clear tree;
+
+
+
+         // POPULATE TREE
+
             // TODO: make this more efficient.
             $("#tree_nodes").empty();
-
-            // DEBUG
-            $("#debug").html(JSON.stringify(json));
 
             // JSON
             $.each(json.node_tree, function(i, item) {
@@ -172,36 +175,42 @@
                format_node("#"+item.id+"_tree", item.speaker.speaker_type, false);
                gbl_previous_node = item.id;
 
-
             });
             gbl_current_node = json.current_node.id;
 
-
-
-
          // CURRENT NODE
 
-            if (json.current_node.speaker.speaker_type === -1){
-
-               var html_input = '<div class="span-center-current"><p><button id="'+ json.current_node.id +'_tree">' + json.current_node.node_text + '</button></p></div>';
+               var html_input = '<div class="span-center-current"><p><button id="'+ json.current_node.id +'_tree">' + json.current_node.node_text + '</button><br><div id="node_current_button_hover">Click to edit</div></p></div>';
                $("#tree_nodes").append(html_input);
                // FORMAT NODE
                format_node("#"+json.current_node.id+"_tree", json.current_node.speaker.speaker_type, false);
 
 
+               // MOUSEOVER for CURRENT NODE
+               $("#node_current_button_hover").hide();
+
+               $('#'+ json.current_node.id +'_tree').mouseenter(function() {
+                  $("#node_current_button_hover").show("slide", null, "fast", null);
+
+               }).mouseleave(function() {
+                          $("#node_current_button_hover").hide("slide", null, "fast", null);
+               });
+
+
                // BIND EDIT action on CLICK
                $("#"+json.current_node.id+"_tree").click(function (event){
                   event.preventDefault();
+                  $("#node_current_button_hover").hide();
+
                   var node_id = parseInt(this.id.split("_")[0]);
 
-
-                  var html_textarea = '<div id="node_edit_group"><textarea rows="' +($("#"+json.current_node.id+"_tree").height())/17 + '" id="node_edit_form" class="form-node-edit">'+json.current_node.node_text+'</textarea>' +
+                  var html_textarea = '<div id="node_edit_group"><textarea rows="' +(($("#"+json.current_node.id+"_tree").height())/17+1) + '" id="node_edit_form" class="form-node-edit">'+json.current_node.node_text+'</textarea>' +
                           '<p class="tree-1"><button class="function-button" id="'+ json.current_node.id +'_delete">Delete</button> <button class="function-button" id="'+ json.current_node.id +'_cancel">Cancel</button></p></div>';
 
 
                   $(this).after(html_textarea);
                   $(this).hide();
-                  $("#node_edit_form").width($(this).width());
+                  $("#node_edit_form").width(Math.min($(this).width()+20,260));
 
                // CANCEL
                   $("#"+json.current_node.id+"_cancel").click(function (event){
@@ -244,94 +253,94 @@
                   });
                });
 
-            }  else {
-               var html_current_node = "<div class=\"span-center-current\"><div>" +
-                       "<div class=\"btn-group\" id=\""+ json.current_node.id +"_group\">" +
-                       "<button id=\""+ json.current_node.id +"_tree\">" + json.current_node.node_text + "</button>" +
-                       "<button class=\"btn dropdown-toggle\" data-toggle=\"dropdown\">" +
-                       "<span class=\"caret\"></span></button></div> " +
-                       "<div id=\"node_options\"><a href=\"#\" id=\"" + json.current_node.id + "_edit\"> edit </a> | " +
-                       "<a href=\"#\" name=\"" + json.current_node.id + "\" id=\"node-delete\">delete</a> | tag   <div><div></div>";
+//
+//               var html_current_node = "<div class=\"span-center-current\"><div>" +
+//                       "<div class=\"btn-group\" id=\""+ json.current_node.id +"_group\">" +
+//                       "<button id=\""+ json.current_node.id +"_tree\">" + json.current_node.node_text + "</button>" +
+//                       "<button class=\"btn dropdown-toggle\" data-toggle=\"dropdown\">" +
+//                       "<span class=\"caret\"></span></button></div> " +
+//                       "<div id=\"node_options\"><a href=\"#\" id=\"" + json.current_node.id + "_edit\"> edit </a> | " +
+//                       "<a href=\"#\" name=\"" + json.current_node.id + "\" id=\"node-delete\">delete</a> | tag   <div><div></div>";
+//
+//               $("#tree_nodes").append(html_current_node);
+//
+//               // FORMAT CURRENT NODE
+//               format_node("#"+json.current_node.id+"_group", json.current_node.speaker.speaker_type,true);
+//
+//               // MOUSEOVER for CURRENT NODE
+//               $("#node_options").hide();
+//               $(".span-center-current").mouseenter(function() {
+//                  $("#node_options").show("slide", null, "fast", null);
+//
+//               }).mouseleave(function() {
+//                          $("#node_options").hide("slide", null, "fast", null);
+//               });
 
-               $("#tree_nodes").append(html_current_node);
-
-               // FORMAT CURRENT NODE
-               format_node("#"+json.current_node.id+"_group", json.current_node.speaker.speaker_type,true);
-
-               // MOUSEOVER for CURRENT NODE
-               $("#node_options").hide();
-               $(".span-center-current").mouseenter(function() {
-                  $("#node_options").show("slide", null, "fast", null);
-
-               }).mouseleave(function() {
-                          $("#node_options").hide("slide", null, "fast", null);
-               });
 
 
-            }
 
 
 
             // BIND EDIT CURRENT NODE
 
-            $("#"+json.current_node.id+"_edit").click(function (event){
-               event.preventDefault();
-               var node_id = parseInt(this.id.slice(0,-5));
-               var html_textarea = "<textarea rows=\"3\" id=\"node_edit\" class=\"form-node-edit\">"+json.current_node.node_text+"</textarea>";
-               $(".span-center-current div .btn-group").after(html_textarea);
-               $(".span-center-current div .btn-group").hide();
-               $("#node_edit").width($(".span-center-current div .btn-group").width());
-               $("#node_edit").keypress(function(event) {
-                  if(event.which == 13) {
-                     event.preventDefault();
-                     var dataString = 'node[node_text]=' + $("#node_edit").val();
-                     $.ajax({
-                        type: "PUT",
-                        url: "nodes/"+gbl_current_node+"/",
-                        data: dataString,
-                        dataType: "json",
-                        success: function(returnJSON) { //if node update success, then populate new node
-                           $(".span-center-current div .btn-group").show();
-                           $("#"+gbl_current_node+"_tree").text($("#node_edit").val());
-                           $("#node_edit").remove();
-                        }
-                     });
-                  }
-               });
-            });
+//            $("#"+json.current_node.id+"_edit").click(function (event){
+//               event.preventDefault();
+//               var node_id = parseInt(this.id.slice(0,-5));
+//               var html_textarea = "<textarea rows=\"3\" id=\"node_edit\" class=\"form-node-edit\">"+json.current_node.node_text+"</textarea>";
+//               $(".span-center-current div .btn-group").after(html_textarea);
+//               $(".span-center-current div .btn-group").hide();
+//               $("#node_edit").width($(".span-center-current div .btn-group").width());
+//               $("#node_edit").keypress(function(event) {
+//                  if(event.which == 13) {
+//                     event.preventDefault();
+//                     var dataString = 'node[node_text]=' + $("#node_edit").val();
+//                     $.ajax({
+//                        type: "PUT",
+//                        url: "nodes/"+gbl_current_node+"/",
+//                        data: dataString,
+//                        dataType: "json",
+//                        success: function(returnJSON) { //if node update success, then populate new node
+//                           $(".span-center-current div .btn-group").show();
+//                           $("#"+gbl_current_node+"_tree").text($("#node_edit").val());
+//                           $("#node_edit").remove();
+//                        }
+//                     });
+//                  }
+//               });
+//            });
+//
+//            $("#node-delete").click(function (event){
+//               event.preventDefault();
+//
+//
+//               // need to check child nodes
+//
+//               var node_id = parseInt(this.name);
+//               var html_textarea = "Are you sure you wish to delete this node? <a href=\"#\" id=\"node-delete-yes\">YES</a> | NO";
+//               $(".span-center-current div .btn-group").after(html_textarea);
+//               $(".span-center-current div .btn-group").hide();
+//
+//               $("#node-delete-yes").click(function(event) {
+//
+//                  event.preventDefault();
+//                  $.ajax({
+//                     type: "DELETE",
+//                     url: "nodes/"+gbl_current_node+"/",
+//                     data: null,
+//                     dataType: "json",
+//                     success: function(returnJSON) { //if node delete success, then jump to previous node
+//                        $(".span-center-current div .btn-group").remove();
+//
+//                        $("#node-delete-yes").remove();
+//                        $("#node_options-yes").remove();
+//                        History.back();
+//                     }
+//                  });
+//               });
+//            });
 
-            $("#node-delete").click(function (event){
-               event.preventDefault();
 
 
-               // need to check child nodes
-
-               var node_id = parseInt(this.name);
-               var html_textarea = "Are you sure you wish to delete this node? <a href=\"#\" id=\"node-delete-yes\">YES</a> | NO";
-               $(".span-center-current div .btn-group").after(html_textarea);
-               $(".span-center-current div .btn-group").hide();
-
-               $("#node-delete-yes").click(function(event) {
-
-                  event.preventDefault();
-                  $.ajax({
-                     type: "DELETE",
-                     url: "nodes/"+gbl_current_node+"/",
-                     data: null,
-                     dataType: "json",
-                     success: function(returnJSON) { //if node delete success, then jump to previous node
-                        $(".span-center-current div .btn-group").remove();
-
-                        $("#node-delete-yes").remove();
-                        $("#node_options-yes").remove();
-                        History.back();
-                     }
-                  });
-               });
-            });
-
-
-            // BIND DELETE NODE
 
             bind_node_tree("#tree_nodes div div button");
 
