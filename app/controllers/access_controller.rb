@@ -22,7 +22,7 @@ class AccessController < ApplicationController
       session[:username] = authorized_user.username
       flash[:notice] = "You are now logged in."
       logger.debug "logged in: #{session[:user_id]}"
-      redirect_to(:controller => 'users', :action => 'index')
+      redirect_to(:controller => 'scenarios', :action => 'index')
     else
       flash[:notice] = "Invalid username/password combination."
       logger.debug "login failed"

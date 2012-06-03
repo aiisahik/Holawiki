@@ -1,24 +1,6 @@
 <script type="text/javascript" xmlns="http://www.w3.org/1999/html">
 
-
-
 (function(window,undefined){
-
-   // Prepare
-
-
-   // Change our States
-//      History.pushState({state:1}, "State 1", "?state=1"); // logs {state:1}, "State 1", "?state=1"
-//      History.pushState({state:2}, "State 2", "?state=2"); // logs {state:2}, "State 2", "?state=2"
-//      History.replaceState({state:3}, "State 3", "?state=3"); // logs {state:3}, "State 3", "?state=3"
-//      History.pushState(null, null, "?state=4"); // logs {}, '', "?state=4"
-//      History.back(); // logs {state:3}, "State 3", "?state=3"
-//      History.back(); // logs {state:1}, "State 1", "?state=1"
-//      History.back(); // logs {}, "Home Page", "?"
-//      History.go(2); // logs {state:3}, "State 3", "?state=3"
-//
-//
-
 
    $(function() {
 
@@ -36,10 +18,6 @@
          History.log(State.data, State.title, State.url);
 
          populate_node_tree(State.data.node);
-
-
-
-
 
       });
 
@@ -64,7 +42,7 @@
          var gbl_user_id = <%= session[:user_id] %>;
       <% end %>
 
-   // CLICK SCENARIO >> OPENING LINES
+   // BIND CLICK SCENARIO >> OPENING LINES
 
       var bind_scenario = function(jsonTarget){
 
@@ -110,51 +88,52 @@
 
             gbl_current_scenario = json.scenario.id;
 
-            populate_event_node(json.start_node,"#tree_nodes");
+            // add conversation start node
+            var html_input = '<div class="span-center-inner"><p><button id="'+ json.start_node.id +'_tree">' + json.start_node.node_text + '</button></p></div>';
+            $("#tree_nodes").append(html_input);
+            format_node("#"+json.start_node.id+"_tree", json.start_node.speaker.speaker_type, false);
 
-            populate_next_nodes(json.next_nodes);
+            bind_node_tree('#'+json.start_node.id +'_tree');
+
+            $("#next_nodes").empty();
+            populate_next_nodes(json.next_nodes_0);
+            populate_next_nodes(json.next_nodes_1);
+            populate_next_nodes(json.next_nodes_events);
 
          });
       };
-
-      var populate_event_node = function(json,jqueryTarget){
-
-         var html_input = '<div class="span-center-event"><p><a href="#" class="fill-div" id="'+ json.id +'_event">' + json.node_text + '</button></p></div>';
-         $(jqueryTarget).append(html_input);
-         bind_node_tree('#'+json.id +'_event');
-
-
-      };
-
 
    // populate next nodes based on json input
 
       var populate_next_nodes = function(json){
 
-         $("#next_nodes").empty();
-         $.each(json, function(i, item) {
+         if (json.length > 0) {
 
-            if (item.speaker.speaker_type === -1){
-               populate_event_node(item,"#next_nodes");
+            gbl_next_speaker_type = json[0].speaker.speaker_type;
 
-            } else {
+            var html_input = '<div class="span-center-inner"><h3 id="next_speaker_'+gbl_next_speaker_type+'"></h3></div>';
 
-            var html_input = "<div class=\"span-center-inner\"><p><button type=\"submit\" id=\""+ item.id +"_next\">" + item.node_text + "</button></p></div>";
+            $.each(json, function(i, item) {
+
+               html_input += '<div class="span-center-inner"><p><button type="submit" id="'+ item.id +'_next">' + item.node_text + '</button></p></div>';
                $("#next_nodes").append(html_input);
                $("#"+item.id+"_next").attr("class", "btn btn-info button");
                format_node("#"+item.id+"_next", item.speaker.speaker_type, false);
+               html_input = '';
+            });
+
+            // $("#next_nodes").before();
+
+            if (gbl_next_speaker_type === -1) {
+               $('#next_speaker_'+gbl_next_speaker_type).html('Next Events:');
+            } else {
+               $('#next_speaker_'+gbl_next_speaker_type).html(gbl_speaker_arr[gbl_next_speaker_type] + " might say:");
             }
-            gbl_next_speaker_type = item.speaker.speaker_type;
-         });
 
-         $("#input-node").show();
+            $("#input-node").show();
 
-
-
-
-         $("#next_speaker").html(gbl_speaker_arr[gbl_next_speaker_type] + " might say:");
-
-         bind_node_tree("#next_nodes p button"); // bind click for next nodes
+            bind_node_tree("#next_nodes p button"); // bind click for next nodes
+         }
       };
 
    // bind click for tree nodes
@@ -170,11 +149,9 @@
          });
       };
 
-      // generate tree nodes
 
+   // generate TREE NODES
       var populate_node_tree = function(node_id) {
-
-         //var jsonUrl = "/nodes/tree/"+node_id+".json";
 
          var jsonUrl = "/nodes/tree/"+node_id+".json?scenario_id="+gbl_current_scenario;
          $.getJSON(jsonUrl, function (json) {
@@ -189,23 +166,11 @@
             // JSON
             $.each(json.node_tree, function(i, item) {
 
-               if (item.speaker.speaker_type === -1){
-                  populate_event_node(item,"#tree_nodes");
-
-
-               } else {
-
-                  var html_input = "<div class=\"span-center-inner\"><p><button id=\""+ item.id +"_tree\">" + item.node_text + "</button></p></div>";
+               var html_input = '<div class="span-center-inner"><p><button id="'+ item.id +'_tree">' + item.node_text + '</button></p></div>';
                   $("#tree_nodes").append(html_input);
-
-
                // FORMAT NODE
-
-                  format_node("#"+item.id+"_tree", item.speaker.speaker_type, false);
-
-               }
-
-                  gbl_previous_node = item.id;
+               format_node("#"+item.id+"_tree", item.speaker.speaker_type, false);
+               gbl_previous_node = item.id;
 
 
             });
@@ -218,12 +183,66 @@
 
             if (json.current_node.speaker.speaker_type === -1){
 
-               var html_input = '<div class="span-center-current"><div class="span-center-current-event"><p>' + json.current_node.node_text + '</p></div>';
-
-               html_input += '<div id="node_options"><a href="#" id="' + json.current_node.id + '_edit"> edit </a> | ' +
-               '<a href="#" name="' + json.current_node.id + '" id="node-delete">delete</a> | tag   </div></div>';
-
+               var html_input = '<div class="span-center-current"><p><button id="'+ json.current_node.id +'_tree">' + json.current_node.node_text + '</button></p></div>';
                $("#tree_nodes").append(html_input);
+               // FORMAT NODE
+               format_node("#"+json.current_node.id+"_tree", json.current_node.speaker.speaker_type, false);
+
+
+               // BIND EDIT action on CLICK
+               $("#"+json.current_node.id+"_tree").click(function (event){
+                  event.preventDefault();
+                  var node_id = parseInt(this.id.split("_")[0]);
+
+
+                  var html_textarea = '<div id="node_edit_group"><textarea rows="' +($("#"+json.current_node.id+"_tree").height())/17 + '" id="node_edit_form" class="form-node-edit">'+json.current_node.node_text+'</textarea>' +
+                          '<p class="tree-1"><button class="function-button" id="'+ json.current_node.id +'_delete">Delete</button> <button class="function-button" id="'+ json.current_node.id +'_cancel">Cancel</button></p></div>';
+
+
+                  $(this).after(html_textarea);
+                  $(this).hide();
+                  $("#node_edit_form").width($(this).width());
+
+               // CANCEL
+                  $("#"+json.current_node.id+"_cancel").click(function (event){
+                     $("#"+json.current_node.id+"_tree").show();
+                     $("#node_edit_group").remove();
+                  });
+
+               // EDIT upon press ENTER
+                  $("#node_edit_form").keypress(function(event) {
+                     if(event.which == 13) {
+                        event.preventDefault();
+                        var dataString = 'node[node_text]=' + $("#node_edit_form").val();
+                        $.ajax({
+                           type: "PUT",
+                           url: "nodes/"+gbl_current_node+"/",
+                           data: dataString,
+                           dataType: "json",
+                           success: function(returnJSON) { //if node update success, then populate new node
+                              $("#"+node_id+"_tree").show();
+                              $("#"+node_id+"_tree").text($("#node_edit_form").val());
+                              $("#node_edit_group").remove();
+                           }
+                        });
+                     }
+                  });
+               // DELETE
+                  $("#"+json.current_node.id +'_delete').click(function(event) {
+
+                     event.preventDefault();
+                     $.ajax({
+                        type: "DELETE",
+                        url: "nodes/"+gbl_current_node+"/",
+                        data: null,
+                        dataType: "json",
+                        success: function(returnJSON) { //if node delete success, then jump to previous node
+                           $("#node_edit_group").remove();
+                           History.back();
+                        }
+                     });
+                  });
+               });
 
             }  else {
                var html_current_node = "<div class=\"span-center-current\"><div>" +
@@ -238,15 +257,19 @@
 
                // FORMAT CURRENT NODE
                format_node("#"+json.current_node.id+"_group", json.current_node.speaker.speaker_type,true);
-            }
-            // MOUSEOVER for CURRENT NODE
-            $("#node_options").hide();
-            $(".span-center-current").mouseenter(function() {
-               $("#node_options").show("slide", null, "fast", null);
 
-            }).mouseleave(function() {
-               $("#node_options").hide("slide", null, "fast", null);
-            });
+               // MOUSEOVER for CURRENT NODE
+               $("#node_options").hide();
+               $(".span-center-current").mouseenter(function() {
+                  $("#node_options").show("slide", null, "fast", null);
+
+               }).mouseleave(function() {
+                          $("#node_options").hide("slide", null, "fast", null);
+               });
+
+
+            }
+
 
 
             // BIND EDIT CURRENT NODE
@@ -322,7 +345,13 @@
             // BIND CLICK for TREE NODES
             bind_node_tree("#tree_nodes p button");
 
-            populate_next_nodes(json.next_nodes);
+
+            // POPULATE NEXT NODES
+            $("#next_nodes").empty();
+            populate_next_nodes(json.next_nodes_0);
+            populate_next_nodes(json.next_nodes_1);
+            populate_next_nodes(json.next_nodes_events);
+
 
          });
       };
@@ -348,7 +377,7 @@
             }
             $(jqueryTarget+" button:nth-child(2)").height($(jqueryTarget+" button:nth-child(1)").height()+8);
 
-         } else {
+         } else if (speaker_type >= 0) {
             if ($(jqueryTarget).width() > 180) {
                $(jqueryTarget).width(180);
 
@@ -427,9 +456,7 @@
 
     <div id="tree_nodes"></div>
 
-    <div class="span-center-inner">
-        <h3 id="next_speaker"></h3>
-    </div>
+
 
     <div id="next_nodes"></div>
 

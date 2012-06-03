@@ -42,10 +42,21 @@ class NodesController < ApplicationController
     end
 
     @tree = @tree.reverse
-    @next_nodes = Node.where("previous_node_id = ? AND scenario_id = ?", @current_node.id, params[:scenario_id])
 
 
-    # find the next nodes
+    # NEXT NODES
+
+    #@next_nodes = Node.where("previous_node_id = ? AND scenario_id = ?", @current_node.id, params[:scenario_id])
+    #@next_nodes_0 = Node.joins(:speaker).where(:speakers => {:speaker_type => 0}).where("previous_node_id = ? AND nodes.scenario_id = ?", @current_node.id, params[:scenario_id])
+    # Left
+    @next_nodes_0 = Node.joins(:speaker).where("previous_node_id = ? AND nodes.scenario_id = ? AND speakers.speaker_type = ?", @current_node.id, params[:scenario_id],0)
+    # Right
+    @next_nodes_1 = Node.joins(:speaker).where("previous_node_id = ? AND nodes.scenario_id = ? AND speakers.speaker_type = ?", @current_node.id, params[:scenario_id],1)
+    # Events
+    @next_nodes_events = Node.joins(:speaker).where("previous_node_id = ? AND nodes.scenario_id = ? AND speakers.speaker_type = ?", @current_node.id, params[:scenario_id],-1)
+
+
+    # OUTPUT
 
     respond_to do |format|
       format.json { render json: {
@@ -53,7 +64,9 @@ class NodesController < ApplicationController
           :speakers => @speakers,
           :current_node => @current_node,
           :node_tree => @tree,
-          :next_nodes => @next_nodes,
+          :next_nodes_0 => @next_nodes_0,
+          :next_nodes_1 => @next_nodes_1,
+          :next_nodes_events => @next_nodes_events,
           :debug => @debug}}
     end
   end
@@ -62,7 +75,17 @@ class NodesController < ApplicationController
 
     @scenario = Scenario.find(params[:scenario_id])
     @start_node = Node.where("scenario_id = ? AND previous_node_id = 0", params[:scenario_id])
-    @next_nodes = Node.where("scenario_id = ? AND previous_node_id = ?", params[:scenario_id],@start_node.first.id)
+
+    # @next_nodes = Node.where("scenario_id = ? AND previous_node_id = ?", params[:scenario_id],@start_node.first.id)
+
+    @next_nodes_0 = Node.joins(:speaker).where("previous_node_id = ? AND nodes.scenario_id = ? AND speakers.speaker_type = ?", @start_node.first.id,params[:scenario_id],0)
+    # Right
+    @next_nodes_1 = Node.joins(:speaker).where("previous_node_id = ? AND nodes.scenario_id = ? AND speakers.speaker_type = ?", @start_node.first.id,params[:scenario_id],1)
+    # Events
+    @next_nodes_events = Node.joins(:speaker).where("previous_node_id = ? AND nodes.scenario_id = ? AND speakers.speaker_type = ?", @start_node.first.id,params[:scenario_id],-1)
+
+    #@next_nodes_1 = Node.where("scenario_id = ? AND previous_node_id = ? AND speaker.speaker_type = ?", params[:scenario_id],@start_node.first.id,1)
+    #@next_nodes_2 = Node.where("scenario_id = ? AND previous_node_id = ? AND speaker.speaker_type = ?", params[:scenario_id],@start_node.first.id,2)
     @speakers = Speaker.where("scenario_id = ?", params[:scenario_id])
 
 
@@ -72,7 +95,11 @@ class NodesController < ApplicationController
           :scenario => @scenario,
           :speakers => @speakers,
           :start_node => @start_node.first,
-          :next_nodes => @next_nodes}
+          #:next_nodes => @next_nodes,
+          :next_nodes_0 => @next_nodes_0,
+          :next_nodes_1 => @next_nodes_1,
+          :next_nodes_events => @next_nodes_events
+          }
       }
     end
   end
